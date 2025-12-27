@@ -48,6 +48,10 @@ lib LibUsrSCTP
   SCTP_ABORT     = 0x0800
   SCTP_EOF       = 0x0100
 
+  # SCTP bindx flags
+  SCTP_BINDX_ADD_ADDR = 0x01
+  SCTP_BINDX_REM_ADDR = 0x02
+
   # Notification types
   SCTP_DATA_IO_EVENT          = 0x0001
   SCTP_ASSOCIATION_EVENT      = 0x0002
@@ -179,9 +183,11 @@ lib LibUsrSCTP
                      ulp_info : Void*) : Void*
   fun usrsctp_close(so : Void*) : Void
   fun usrsctp_bind(so : Void*, name : Void*, namelen : Socklen) : LibC::Int
+  fun usrsctp_bindx(so : Void*, addrs : Void*, addrcnt : LibC::Int, flags : LibC::Int) : LibC::Int
   fun usrsctp_listen(so : Void*, backlog : LibC::Int) : LibC::Int
   fun usrsctp_accept(so : Void*, addr : Void*, addrlen : Socklen*) : Void*
   fun usrsctp_connect(so : Void*, name : Void*, addrlen : Socklen) : LibC::Int
+  fun usrsctp_connectx(so : Void*, addrs : Void*, addrcnt : LibC::Int, id : UInt32*) : LibC::Int
   fun usrsctp_sendv(so : Void*, data : Void*, len : LibC::SizeT, addrs : Void*,
                     addrcnt : LibC::Int, info : Void*, infolen : Socklen,
                     infotype : LibC::UInt, flags : LibC::Int) : Ssize

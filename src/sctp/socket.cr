@@ -76,6 +76,53 @@ module SCTP
       end
     end
 
+    # Bind the socket to multiple local addresses (multi-homing)
+    #
+    # Example:
+    # ```
+    # socket.bind(["192.168.1.100", "10.0.0.100"], 3000)
+    # ```
+    def bind(hosts : Array(String), port : Int32) : Void
+      raise Error.new("Socket is closed") if @closed
+      raise ArgumentError.new("Must provide at least one address") if hosts.empty?
+
+      # Bind to first address
+      bind(hosts[0], port)
+
+      # Add additional addresses if any
+      if hosts.size > 1
+        hosts[1..].each do |host|
+          add_bind_address(host, port)
+        end
+      end
+    end
+
+    # Add an additional local address to the socket (for multi-homing)
+    def add_bind_address(host : String, port : Int32) : Void
+      raise Error.new("Socket is closed") if @closed
+
+      addr = Address.new(host, port).to_sockaddr_in
+      result = LibUsrSCTP.usrsctp_bindx(@socket, pointerof(addr).as(Void*),
+        1, LibUsrSCTP::SCTP_BINDX_ADD_ADDR)
+
+      if result < 0
+        raise BindError.new("Failed to add bind address #{host}:#{port}")
+      end
+    end
+
+    # Remove a local address from the socket
+    def remove_bind_address(host : String, port : Int32) : Void
+      raise Error.new("Socket is closed") if @closed
+
+      addr = Address.new(host, port).to_sockaddr_in
+      result = LibUsrSCTP.usrsctp_bindx(@socket, pointerof(addr).as(Void*),
+        1, LibUsrSCTP::SCTP_BINDX_REM_ADDR)
+
+      if result < 0
+        raise BindError.new("Failed to remove bind address #{host}:#{port}")
+      end
+    end
+
     # Listen for incoming connections
     def listen(backlog : Int32 = 128) : Void
       raise Error.new("Socket is closed") if @closed
@@ -117,6 +164,44 @@ module SCTP
 
       if result < 0
         raise ConnectError.new("Failed to connect to #{host}:#{port}")
+      end
+    end
+
+    # Connect to multiple remote addresses (multi-homing)
+    #
+    # SCTP will use these addresses for redundancy and automatic failover.
+    #
+    # Example:
+    # ```
+    # socket.connect(["192.168.1.100", "10.0.0.100"], 3000)
+    # ```
+    def connect(hosts : Array(String), port : Int32) : Void
+      raise Error.new("Socket is closed") if @closed
+      raise ArgumentError.new("Must provide at least one address") if hosts.empty?
+
+      # Store first address as remote
+      @remote_address = Address.new(hosts[0], port)
+
+      # Build array of sockaddr structures
+      addrs = hosts.map { |host| Address.new(host, port).to_sockaddr_in }
+
+      # Allocate memory for address array
+      addr_size = sizeof(LibUsrSCTP::SockaddrIn)
+      buffer = Pointer(UInt8).malloc(addr_size * addrs.size)
+
+      # Copy addresses to buffer
+      addrs.each_with_index do |addr, i|
+        ptr = buffer + (i * addr_size)
+        ptr.copy_from(pointerof(addr).as(UInt8*), addr_size)
+      end
+
+      # Connect to all addresses
+      assoc_id = 0_u32
+      result = LibUsrSCTP.usrsctp_connectx(@socket, buffer.as(Void*),
+        addrs.size, pointerof(assoc_id))
+
+      if result < 0
+        raise ConnectError.new("Failed to connect to #{hosts.join(", ")}:#{port}")
       end
     end
 

@@ -6,7 +6,7 @@ Crystal bindings and high-level API for [libusrsctp](https://github.com/sctplab/
 
 - 🚀 High-level Socket-like API for SCTP
 - 🔧 Complete bindings to libusrsctp
-- 🌐 Multi-homing support
+- 🌐 Multi-homing support (bind/connect to multiple addresses)
 - 📦 Multi-streaming support
 - 🔒 Type-safe Crystal interface
 - 🧪 Comprehensive test suite
@@ -92,6 +92,25 @@ socket.write("Stream 1 data", stream: 1)
 socket.write("Stream 5 data", stream: 5)
 
 socket.close
+```
+
+### Multi-homing (Redundant Addresses)
+
+```crystal
+require "sctp"
+
+# Server binds to multiple addresses for redundancy
+server = SCTP::Socket.new
+server.bind(["192.168.1.100", "10.0.0.100"], 3000)
+server.listen
+
+# Client connects to multiple addresses
+client = SCTP::Socket.new
+client.connect(["192.168.1.100", "10.0.0.100"], 3000)
+
+# SCTP automatically handles failover between addresses
+client.write("Data with redundant paths")
+client.close
 ```
 
 ## API Overview

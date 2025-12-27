@@ -43,6 +43,49 @@ socket.bind("127.0.0.1", 3000)
 
 ---
 
+#### bind(hosts : Array(String), port : Int32)
+
+Bind the socket to multiple local addresses (multi-homing).
+
+```crystal
+socket.bind(["192.168.1.100", "10.0.0.100"], 3000)
+```
+
+**Parameters:**
+- `hosts` - Array of IP addresses to bind to
+- `port` - Port number
+
+**Raises:**
+- `SCTP::BindError` if bind fails
+- `ArgumentError` if hosts array is empty
+
+---
+
+#### add_bind_address(host : String, port : Int32)
+
+Add an additional local address to the socket (for multi-homing).
+
+```crystal
+socket.bind("192.168.1.100", 3000)
+socket.add_bind_address("10.0.0.100", 3000)
+```
+
+**Raises:** `SCTP::BindError` if operation fails
+
+---
+
+#### remove_bind_address(host : String, port : Int32)
+
+Remove a local address from the socket.
+
+```crystal
+socket.remove_bind_address("10.0.0.100", 3000)
+```
+
+**Raises:** `SCTP::BindError` if operation fails
+
+---
+
 #### listen(backlog : Int32 = 128)
 
 Listen for incoming connections.
@@ -78,6 +121,26 @@ socket.connect("127.0.0.1", 3000)
 ```
 
 **Raises:** `SCTP::ConnectError` if connection fails
+
+---
+
+#### connect(hosts : Array(String), port : Int32)
+
+Connect to multiple remote addresses (multi-homing).
+
+SCTP will use these addresses for redundancy and automatic failover.
+
+```crystal
+socket.connect(["192.168.1.100", "10.0.0.100"], 3000)
+```
+
+**Parameters:**
+- `hosts` - Array of remote IP addresses
+- `port` - Port number
+
+**Raises:**
+- `SCTP::ConnectError` if connection fails
+- `ArgumentError` if hosts array is empty
 
 ---
 

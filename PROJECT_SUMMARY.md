@@ -50,6 +50,7 @@ The library follows Crystal's standard library design patterns, particularly mir
 
 ✅ Basic socket operations (bind, listen, accept, connect, send, receive)
 ✅ Multi-streaming (configurable number of streams)
+✅ Multi-homing (bind/connect to multiple addresses with automatic failover)
 ✅ Ordered and unordered delivery
 ✅ Payload Protocol ID (PPID) support
 ✅ Stream-specific operations
@@ -66,7 +67,6 @@ The library follows Crystal's standard library design patterns, particularly mir
 ### Limitations / Future Work
 
 - IPv6 support not yet implemented
-- Multi-homing requires additional work
 - Some advanced SCTP features not exposed:
   - SCTP_PARTIAL_DELIVERY
   - SCTP_ADAPTATION_LAYER
