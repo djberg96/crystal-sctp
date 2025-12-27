@@ -1,6 +1,6 @@
 module SCTP
   # Exception raised for SCTP-related errors
-  class Error < Exception
+  class Error < IO::Error
   end
 
   # Exception raised when connection fails

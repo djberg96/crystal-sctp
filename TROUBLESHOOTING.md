@@ -2,6 +2,26 @@
 
 Common issues and solutions for Crystal SCTP.
 
+## UDP Encapsulation Mode
+
+This library uses libusrsctp in UDP encapsulation mode, which means SCTP packets are sent over UDP port 9899. This has some implications:
+
+### Local Testing Limitations
+
+**Issue:** Tests or examples hang when trying to connect on localhost.
+
+**Cause:** UDP encapsulation requires proper network routing. For same-host connections, both client and server communicate through UDP port 9899, which requires:
+1. The UDP transport layer to be running (handled automatically)
+2. Proper loopback routing for UDP packets
+3. The SCTP addresses to be reachable
+
+**Workarounds:**
+1. Use `0.0.0.0` for server bind addresses instead of `127.0.0.1`
+2. For testing, consider using actual network interfaces instead of loopback
+3. Some operations (bind, socket creation) work fine; connect/accept may require network setup
+
+**Current Status:** Socket creation and binding work correctly. Connection establishment in loopback mode is still being refined.
+
 ## Installation Issues
 
 ### libusrsctp not found

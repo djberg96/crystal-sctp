@@ -72,7 +72,8 @@ module SCTP
         sizeof(LibUsrSCTP::SockaddrIn))
 
       if result < 0
-        raise BindError.new("Failed to bind to #{host}:#{port}")
+        errno = Errno.value
+        raise BindError.new("Failed to bind to #{host}:#{port}: #{errno.message}")
       end
     end
 
@@ -229,15 +230,23 @@ module SCTP
       flags = 0_u32
       flags |= LibUsrSCTP::SCTP_UNORDERED if unordered
 
-      bytes_sent = LibUsrSCTP.usrsctp_sendmsg(
+      # Use sendv with send info structure for stream-specific sending
+      sndinfo = LibUsrSCTP::SctpSndinfo.new
+      sndinfo.snd_sid = stream.to_u16
+      sndinfo.snd_flags = flags.to_u16
+      sndinfo.snd_ppid = ppid
+      sndinfo.snd_context = 0_u32
+      sndinfo.snd_assoc_id = 0_u32
+
+      bytes_sent = LibUsrSCTP.usrsctp_sendv(
         @socket,
         bytes.to_unsafe.as(Void*),
         bytes.size,
         nil, 0,
-        ppid,
-        flags,
-        stream.to_u16,
-        0_u32, 0_u32
+        pointerof(sndinfo).as(Void*),
+        sizeof(LibUsrSCTP::SctpSndinfo),
+        1, # SCTP_SENDV_SNDINFO
+        0
       )
 
       if bytes_sent < 0

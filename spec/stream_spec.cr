@@ -29,7 +29,7 @@ describe SCTP::Stream do
   describe "#write" do
     it "writes to the stream" do
       server = SCTP::Socket.new(streams: 5)
-      server.bind("127.0.0.1", 0)
+      server.bind("0.0.0.0", 0)
       server.listen
 
       spawn do

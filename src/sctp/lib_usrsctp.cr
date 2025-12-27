@@ -175,8 +175,11 @@ lib LibUsrSCTP
     msg_flags : LibC::Int
   end
 
+  # Callback types
+  alias SendCallback = (Void*, Void*, LibC::SizeT, UInt8, UInt8) -> LibC::Int
+
   # Core functions
-  fun usrsctp_init(port : UInt16, recv_cb : Void*, debug_printf : Void*) : Void
+  fun usrsctp_init(port : UInt16, send_cb : SendCallback, debug_printf : Void*) : Void
   fun usrsctp_finish : LibC::Int
   fun usrsctp_socket(domain : LibC::Int, type : LibC::Int, protocol : LibC::Int,
                      recv_cb : Void*, send_cb : Void*, sb_threshold : UInt32,
@@ -198,9 +201,9 @@ lib LibUsrSCTP
                          option_value : Void*, option_len : Socklen) : LibC::Int
   fun usrsctp_getsockopt(so : Void*, level : LibC::Int, option_name : LibC::Int,
                          option_value : Void*, option_len : Socklen*) : LibC::Int
-  fun usrsctp_sendmsg(so : Void*, data : Void*, len : LibC::SizeT, to : Void*,
-                      tolen : Socklen, ppid : UInt32, flags : UInt32,
-                      stream_no : UInt16, timetolive : UInt32, context : UInt32) : Ssize
+  # fun usrsctp_sendmsg(so : Void*, data : Void*, len : LibC::SizeT, to : Void*,
+  #                     tolen : Socklen, ppid : UInt32, flags : UInt32,
+  #                     stream_no : UInt16, timetolive : UInt32, context : UInt32) : Ssize
   fun usrsctp_shutdown(so : Void*, how : LibC::Int) : LibC::Int
   fun usrsctp_finish : LibC::Int
 

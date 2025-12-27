@@ -65,7 +65,7 @@ module SCTP
       ((value & 0xFF) << 8) | ((value >> 8) & 0xFF)
     end
 
-    private def ntohs(value : UInt16) : UInt16
+    private def self.ntohs(value : UInt16) : UInt16
       ((value & 0xFF) << 8) | ((value >> 8) & 0xFF)
     end
   end

@@ -20,19 +20,19 @@ describe SCTP::Socket do
   describe "#bind and #listen" do
     it "binds to an address" do
       socket = SCTP::Socket.new
-      socket.bind("127.0.0.1", 0) # Port 0 = any available port
+      socket.bind("0.0.0.0", 0) # Port 0 = any available port
       socket.close
     end
 
     it "binds to multiple addresses (multi-homing)" do
       socket = SCTP::Socket.new
-      socket.bind(["127.0.0.1"], 0)
+      socket.bind(["0.0.0.0"], 0)
       socket.close
     end
 
     it "adds bind address" do
       socket = SCTP::Socket.new
-      socket.bind("127.0.0.1", 0)
+      socket.bind("0.0.0.0", 0)
       # Note: Adding same address twice may fail on some systems
       # This tests the API exists
       socket.close
@@ -65,7 +65,7 @@ describe SCTP::Socket do
   describe "#write and #read" do
     it "sends and receives data" do
       server = SCTP::Socket.new
-      server.bind("127.0.0.1", 0)
+      server.bind("0.0.0.0", 0)
       server.listen
 
       # Get the actual port
@@ -96,7 +96,7 @@ describe SCTP::Socket do
   describe "multi-homing" do
     it "connects to multiple addresses" do
       server = SCTP::Socket.new
-      server.bind("127.0.0.1", 0)
+      server.bind("0.0.0.0", 0)
       server.listen
 
       spawn do
@@ -133,7 +133,7 @@ describe SCTP::Socket do
   describe "#write with streams" do
     it "sends data on specific stream" do
       socket = SCTP::Socket.new(streams: 5)
-      socket.bind("127.0.0.1", 0)
+      socket.bind("0.0.0.0", 0)
       socket.listen
 
       spawn do
@@ -183,13 +183,13 @@ describe SCTP::Socket do
       socket.close
 
       expect_raises(SCTP::Error, "Socket is closed") do
-        socket.bind("127.0.0.1", 3000)
+        socket.bind("0.0.0.0", 3000)
       end
     end
 
     it "raises on invalid stream" do
       socket = SCTP::Socket.new(streams: 3)
-      socket.bind("127.0.0.1", 0)
+      socket.bind("0.0.0.0", 0)
 
       expect_raises(ArgumentError) do
         socket.write("data", stream: 5) # Stream 5 doesn't exist
@@ -200,7 +200,7 @@ describe SCTP::Socket do
 
     it "raises on negative stream" do
       socket = SCTP::Socket.new
-      socket.bind("127.0.0.1", 0)
+      socket.bind("0.0.0.0", 0)
 
       expect_raises(ArgumentError, "Stream must be >= 0") do
         socket.write("data", stream: -1)
