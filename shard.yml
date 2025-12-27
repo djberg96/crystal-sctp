@@ -1,0 +1,18 @@
+name: sctp
+version: 0.1.0
+
+authors:
+  - Daniel Berger <daniel.berger@example.com>
+
+crystal: ">= 1.0.0"
+
+license: MIT
+
+description: |
+  Crystal bindings and high-level API for libusrsctp,
+  providing SCTP (Stream Control Transmission Protocol) support
+  for Mac and Linux platforms.
+
+targets:
+  sctp:
+    main: src/sctp.cr

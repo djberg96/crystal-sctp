@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  crystal-sctp:
+    build: .
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: crystal spec
+
+  # Example server for testing
+  sctp-server:
+    build: .
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: crystal run examples/server.cr
+    ports:
+      - "3000:3000"
+
+  # Example client for testing
+  sctp-client:
+    build: .
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: crystal run examples/client.cr
+    depends_on:
+      - sctp-server

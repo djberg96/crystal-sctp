@@ -1,0 +1,17 @@
+# Crystal
+/docs/
+/lib/
+/bin/
+/.shards/
+*.dwarf
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
