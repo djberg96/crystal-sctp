@@ -29,6 +29,8 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libusrsctp-dev
+        # Enable SCTP kernel module for native SCTP support
+        sudo modprobe sctp || echo "SCTP module not available, will use UDP encapsulation"
 
     - name: Install libusrsctp (macOS)
       if: runner.os == 'macOS'
